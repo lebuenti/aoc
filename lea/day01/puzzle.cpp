@@ -1,39 +1,29 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector> 
+
+#include "../fileReader.h"
 using namespace std;
 
 int main() {
-  ifstream infile("input.txt");
+  vector<string> buffer  = readFile("input.txt");
 
-  string line;
-  int amountLines = 0;
-  while (getline(infile, line)) {
-    amountLines++;
+  int numbers [buffer.size()];
+  for(int i = 0; i < buffer.size(); i++) {
+    numbers[i] = stoi( buffer[i] );
   }
-  infile.close();
-  
-  infile.open("input.txt");
-  int numbers [amountLines];
-  int i = 0;
-  while( getline(infile, line) ) {
-    numbers[i] = stoi( line );
-    i++;
-  }
-  infile.close();
 
-  for(int i = 0; i < amountLines; i++) {
-    for(int j = 0; j < amountLines; j++) {
-      if (i == j) continue;
-      if (numbers[i]+numbers[j] == 2020)  cout << "two number" <<  numbers[i]*numbers[j] << endl;
-      for (int k = 0; k < amountLines; k++) {
-        if (j == k) continue;
-        if (numbers[i] + numbers[j] + numbers[k] == 2020) cout << "three numbers" << numbers[i] * numbers[j] * numbers[k] << endl;
+
+  for(int i = 0; i < buffer.size(); i++) {
+    for(int j = i+1; j < buffer.size(); j++) {
+      if ((numbers[i] + numbers[j]) == 2020)  cout << i << " and " << j << " -> " <<  numbers[i] * numbers[j] << endl;
+      for (int k = j+1; k < buffer.size(); k++) {
+        if ((numbers[i] + numbers[j] + numbers[k]) == 2020) cout << i << " and " << j << " and " << k <<  " -> " << numbers[i] * numbers[j] * numbers[k] << endl;
       }
-      
     }
-
   }
 
   return 0;
 }
+
