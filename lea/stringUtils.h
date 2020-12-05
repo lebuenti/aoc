@@ -9,10 +9,7 @@ char pop(string& str) {
 
 bool checkStringContainsOnlyDigits(string str, int size) {
   smatch matches;
-  if (str.size() == size && regex_search(str, matches, regex("^\\d+$"))) {
-    return true;
-  }
-  return false;
+  return (str.size() == size && regex_search(str, matches, regex("^\\d+$")));
 }
 
 int getNumberFromString(string str) {
