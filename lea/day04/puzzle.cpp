@@ -3,24 +3,8 @@
 #include <string>
 #include <regex>
 #include "../fileReader.h"
+#include "../stringUtils.h"
 using namespace std;
-
-bool checkStringContainsOnlyDigits(string str, int size) {
-  smatch matches;
-  if (str.size() == size && regex_search(str, matches, regex("^\\d+$"))) {
-    return true;
-  }
-  return false;
-}
-
-
-int getNumberFromString(string str) {
-  smatch matches;
-  if (regex_search(str, matches, regex("\\d+"))) {
-    return stoi(matches[0].str());
-  }
-  return -1;
-}
 
 string getMeasuring(string str) {
   smatch matches;
@@ -28,11 +12,6 @@ string getMeasuring(string str) {
     return matches[0].str();
   }
   return "";
-}
-
-bool isHexColor(string str) {
-  smatch matches;
-  return regex_search(str, matches, regex("#([0-9a-f]{6}|[a-f]{6})$"));
 }
 
 bool isEyeColor(string str) {

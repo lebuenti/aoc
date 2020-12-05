@@ -7,13 +7,10 @@
 using namespace std;
 
 int binarySearch(string next, double l, double r) {
-    //cout << "l: " << l << " r: " << r << " next: ";
-
     double m = floor( (r+l) / 2 );
     if (next.empty()) return m;
 
     char nxt = pop(next);
-    //cout << nxt << " m: " << m << endl;
     
     if (nxt == 'F' || nxt == 'L') {
       return binarySearch(next, l, m);
