@@ -1,4 +1,5 @@
 #include <string>
+#include <regex>
 using namespace std;
 
 char pop(string& str) {
