@@ -38,6 +38,10 @@ class Node {
         return (node.getValue() < this->getValue());
     }
 
+    bool isLeaf() {
+      return this->successors.size() == 0;
+    }
+
 };
 
 class Graph {
@@ -58,6 +62,10 @@ class Graph {
         }
       }
       return NULL;
+    }
+
+    vector<Node*> getNodes() {
+      return this->nodes;
     }
 
     int print() {
@@ -106,6 +114,27 @@ class Graph {
       }
 
       return differences;
+    }
+
+
+    int calculateAmountOfPaths(Node* from, Node* to, int res) {
+      //cout << from->getValue() << " -> ";
+      if (from == to) {
+        res = res + 1;
+        //cout << endl;
+        return res;
+      }
+
+      for(int i = 0; i < from->getSuccessors().size(); i++) {
+        res = calculateAmountOfPaths(from->getSuccessors()[i], to, res);
+      }
+
+      return res;
+    }
+
+
+    int getAmountOfPaths(Node* from, Node* to) {
+      return calculateAmountOfPaths(from, to, 0);     
     }
 
 };
