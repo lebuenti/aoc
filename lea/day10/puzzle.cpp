@@ -42,9 +42,8 @@ int main() {
   Node* to = g.findNodeByVal(numbers[numbers.size() - 1]);
   map<int, int> differences = g.getJoltDifferences(from, to);
 
-  int numbersOfPaths = g.getAmountOfPaths(from, to);
+  long int numbersOfPaths = g.getAmountOfPaths(from, to);
 
-  //cout << "1: " << differences[1] << ", 2:" << differences[2] << ", 3: " << differences[3] << endl;
   cout << "number of jolts: " << differences[1] * differences[3] << endl;
   cout << "amount paths : " << numbersOfPaths << endl;
   return 0;

@@ -37,11 +37,6 @@ class Node {
     bool operator< (const Node& node) const {
         return (node.getValue() < this->getValue());
     }
-
-    bool isLeaf() {
-      return this->successors.size() == 0;
-    }
-
 };
 
 class Graph {
@@ -112,29 +107,35 @@ class Graph {
         
         differences[tmp] = differences[tmp] + 1;
       }
-
       return differences;
     }
 
 
-    int calculateAmountOfPaths(Node* from, Node* to, int res) {
-      //cout << from->getValue() << " -> ";
+    long int calculateAmountOfPaths(Node* from, Node* to, long int res, map<Node, long int> &results) {
+      if (results[(*from)] != -1) {
+        return res += results[(*from)];
+      }
+
       if (from == to) {
         res = res + 1;
-        //cout << endl;
         return res;
       }
 
       for(int i = 0; i < from->getSuccessors().size(); i++) {
-        res = calculateAmountOfPaths(from->getSuccessors()[i], to, res);
+        res = calculateAmountOfPaths(from->getSuccessors()[i], to, res, results);
+        results[(*from)] = res;
       }
 
       return res;
     }
 
 
-    int getAmountOfPaths(Node* from, Node* to) {
-      return calculateAmountOfPaths(from, to, 0);     
+    long int getAmountOfPaths(Node* from, Node* to) {
+      map<Node, long int> results;
+      for(int i = 0; i < this->nodes.size(); i++) {
+        results.insert( pair<Node, long int> (*(this->nodes[i]), -1));
+      }
+      return calculateAmountOfPaths(from, to, 0, results);     
     }
 
 };
