@@ -30,7 +30,7 @@ void overwriteBits(char* first, char* second, char* result) {
 }
 
 
-void decToBin(int dec, char* bin) {
+void decToBin(unsigned long int dec, char* bin) {
   for(int i = 35; i >= 0; i--) {
     if (dec !=  0) {
       bin[i] = (dec % 2) + '0';
@@ -54,9 +54,7 @@ unsigned long int binToDec(char* bin) {
 }
 
 
-int main() {
-  vector<string> lines = readFile("input2.txt");
-
+void part1(vector<string> lines) {
   map<unsigned long int, unsigned long int> memory;
   char mask[36];
 
@@ -85,6 +83,86 @@ int main() {
   }
 
   cout << sum << endl;
+}
 
+
+void decode(char* mask, char* other, char* result) {
+  for(int i = 35; i >= 0; i--) {
+    if (mask[i] == '1' || mask[i] == 'X') {
+      result[i] = mask[i];
+    } else if (mask[i] == '0') {
+      result[i] = other[i];
+    } 
+  }
+}
+
+
+void part2(vector<string> lines) {
+  map<unsigned long int, unsigned long int> memory;
+  
+  char mask[36];
+
+  for(int i = 0; i < lines.size(); i++) {
+    if (lines[i].find("mask") != string::npos) {
+      getBinaryFromString(lines[i].substr(lines[i].find("=") + 2, lines[i].size() - 1), mask);
+      continue;
+    }
+
+    unsigned int memAddress = getNumberFromString(lines[i].substr(lines[i].find("[") + 1, lines[i].find("]") ));
+    char memAddressBin[36];
+    decToBin(memAddress, memAddressBin);
+ 
+    char result[36];
+    decode(mask, memAddressBin, result);
+    
+    unsigned int value = getNumberFromString(lines[i].substr(lines[i].find("=") + 2, lines[i].size() - 1));
+    
+    int ctr = 0;
+    for(int i = 0; i < 36; i++) {
+      if (result[i] == 'X') ctr++;
+    }
+
+    vector<unsigned long int> all;
+    for(int i = 0; i < pow(2, ctr); i++) {
+      char tmp[36];
+      int k = 35;
+      decToBin(i, tmp);
+
+      char copyArr[36];
+      copy(begin(result), end(result), begin(copyArr));
+      
+      for(int j = 35; j >= 0; j--) {
+        if (copyArr[j] == 'X') {
+          copyArr[j] = tmp[k];
+          k--;
+        }
+      }
+      unsigned long  int t = binToDec(copyArr);
+      all.push_back(t);
+
+    }
+    for(int i = 0; i < all.size(); i++) {
+      memory[all[i]] = value; 
+    }
+
+  }
+
+  unsigned long int sum = 0;
+  for(auto const& x : memory) {
+    sum += x.second;
+  }
+
+  cout << "sum: " <<  sum << endl;
+
+
+}
+
+
+int main() {
+  vector<string> lines = readFile("input2.txt");
+  
+  part1(lines);
+  part2(lines);
+  
   return 0;
 }
