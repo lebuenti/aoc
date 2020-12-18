@@ -38,20 +38,10 @@ int amountOccupiedSeats(int row, int col, vector<string> current) {
   return occupiedCtr;
 }
 
-int main() {
-  vector<string> lines = readFile("input2.txt");
-  
-  vector<string> current = lines;
-  vector<string> next = lines;
 
-
- 
-  do {
-    current = next;
-
-    for(int i = 0; i < current.size(); i++) {
-      for(int j = 0; j < current[i].size(); j++) {
-        
+vector<string> part1(vector<string> current, vector<string> next) {
+  for(int i = 0; i < current.size(); i++) {
+    for(int j = 0; j < current[i].size(); j++) {
         if (current[i].at(j) == 'L') {
           int occupiedCtr = amountOccupiedSeats(i, j, current);
           if (occupiedCtr == 0) {
@@ -63,12 +53,138 @@ int main() {
             next[i].at(j) = 'L';
           }
         }
-        //cout << next[i].at(j);
-      }
-      //cout << endl;
-    }
-    //cout << endl;
+     }
+   }
+  return next;
+}
 
+
+int amountVisibleOccupiedSeats(int row, int col, vector<string> current) {
+  int occupiedCtr = 0;
+
+  bool r = false, l = false;
+  for(int c = 1; c < current[row].size(); c++) {
+    if (!l) {
+      if (col - c < 0) {
+        l = true;
+      } else {
+        if (current[row].at(col - c) != '.') {
+          if (current[row].at(col - c) == '#') occupiedCtr++;
+          l = true;
+        }
+      }
+    }
+    if (!r) {
+      if (col + c >= current[row].size()) {
+        r = true;
+      } else {
+        if (current[row].at(col + c) != '.') {
+          if (current[row].at(col + c) == '#') occupiedCtr++;
+          r = true;
+        }
+      }
+    }
+    if (r && l) break;
+  }
+
+  bool u = false, d = false, dul = false, dur = false, ddl = false, ddr = false;
+  for(int r = 1; r < current.size(); r++) {
+    if (!u) {
+      if (row - r < 0) {
+        u = true;
+      } else {
+        if (current[row-r].at(col) != '.') {
+          if (current[row-r].at(col) == '#') occupiedCtr++;
+          u = true;
+        }
+      }
+    }
+    if (!d) {
+      if (row + r >= current.size()) {
+        d = true;
+      } else {
+        if (current[row+r].at(col) != '.') {
+          if (current[row+r].at(col) == '#') occupiedCtr++;
+          d = true;
+        }
+      }
+    }
+    if (!dul) {
+      if (row-r < 0 || col-r < 0) {
+        dul = true;
+      } else { 
+        if (current[row-r].at(col-r) != '.') {
+          if (current[row-r].at(col-r) == '#') occupiedCtr++;
+          dul = true;
+        }
+      }
+    }
+    if (!dur) {
+      if (row-r < 0 || col+r >= current[row].size()) {
+        dur = true;
+      } else {
+        if (current[row-r].at(col+r) != '.') {
+          if (current[row-r].at(col+r) == '#') occupiedCtr++;
+          dur = true;
+        }
+      }
+    }
+    if (!ddl) {
+      if (row+r >= current.size() || col-r < 0) {
+        ddl = true;
+      } else {
+        if (current[row+r].at(col-r) != '.') {
+          if (current[row+r].at(col-r) == '#') occupiedCtr++;
+          ddl = true;
+        }
+      }
+    }
+    if (!ddr) {
+      if (row+r >= current.size() || col+r >= current[row].size()) {
+        ddr = true;
+      } else {
+        if (current[row+r].at(col+r) != '.') {
+          if (current[row+r].at(col+r) == '#') occupiedCtr++;
+          ddr = true;
+        }
+      }
+    }
+    if (u && d && dul && dur && ddl && ddr) break;
+  }
+
+  return occupiedCtr;
+}
+
+vector<string> part2(vector<string> current, vector<string> next) {
+  for(int i = 0; i < current.size(); i++) {
+    for(int j = 0; j < current[i].size(); j++) {
+        if (current[i].at(j) == 'L') {
+          int occupiedCtr = amountVisibleOccupiedSeats(i, j, current);
+          if (occupiedCtr == 0) {
+            next[i].at(j) = '#';
+          }
+        } else if (current[i].at(j) == '#') {
+          int occupiedCtr = amountVisibleOccupiedSeats(i, j, current); 
+          if (occupiedCtr >= 5) { 
+            next[i].at(j) = 'L';
+          }
+        }
+     }
+   }
+  return next;
+  
+}
+
+int main() {
+  vector<string> lines = readFile("input2.txt");
+  
+  vector<string> current = lines;
+  vector<string> next = lines;
+
+  do {
+    current = next;
+    //next = part1(current, next);
+    next = part2(current, next);
   } while (!hasSameEntries(current, next));
 
   int ctr = 0;
