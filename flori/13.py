@@ -10,22 +10,21 @@ def do(ll):
     while calc < ts:
       calc += b
     w = calc-ts
-    print(b, calc, calc-ts)
     if bus is None or w < ww:
       ww = w
       bus = b
-  print('bus', bus, ww)
   return ww * bus
 
 def do2(ll):
+  """
+  Reading the Subreddit there are two ways to solve this:
+  1. Chinese Remainder Problem
+  2. Find a pattern to increment t faster
+  """
   bb = list(map(lambda x: int(x) if x != 'x' else x, ll[0].split(',')))
-  #print('bb', bb)
-  #print()
-  #print(bb[0])
-  t = bb[0] * 8993524429
+  t = bb[0]
   while 1:
     t+=bb[0]
-    print(t)
     valid = None
     for idx,b in enumerate(bb):
       if idx == 0 or b == 'x':
@@ -50,21 +49,4 @@ with open('13.in', 'r') as input:
   """
   print("final :")
   print("res", do2([input.read().splitlines()[1]]))
-
-
-"""
-print('ts', ts)
-print('bb', bb)
-bus = None
-smallest = None
-for idx,b in enumerate(bb):
-  res = ts/b
-  if smallest is None or res < smallest:
-    smallest = res
-    bus = b
-print('bus', bus)
-print('waiting', (bus * math.ceil(smallest)))
-print('smallest', smallest)
-return ((bus * math.ceil(smallest)) - ts) * bus
-"""
 
