@@ -8,10 +8,11 @@ def matchstr(R, rk, message, m_idx):
   if m_idx >= len(message):
     # exceeded target string
     return -1
-  if isinstance(R[rk], str):
+  if '"' in R[rk][0][0]:
     # grammar terminal char
-    if message[m_idx] == R[rk]:
-      return R[rk]
+    c = R[rk][0][0].strip('"')
+    if message[m_idx] == c:
+      return c
     else:
       return -1
   for rr in R[rk]:
@@ -30,35 +31,19 @@ def matchstr(R, rk, message, m_idx):
   return -1
 
 
-def do(ll, part):
+with open('19.in', 'r') as f:
+  rules, messages = f.read().split("\n\n")
+  mm = messages.split("\n")
   R = {}
-  messages = []
-  reading_grammar = True
-  for l in ll:
-    if l == '':
-      reading_grammar = False
-    elif reading_grammar:
-      split = l.split(': ')
-      if split[1] == '"a"' or split[1] == '"b"':
-        R[split[0]] = split[1][1]
-      else:
-        rr = split[1].split(' | ')
-        R[split[0]] = []
-        for r in rr:
-          R[split[0]].append(r.split(' '))
-    else:
-      messages.append(l)
-  if part == 2:
-    R["8"] = [["42"], ["42", "8"]]
-    R["11"] = [["42", "31"], ["42", "11", "31"]]
-  res = 0
-  for message in messages:
-    res += (matchstr(R, "0", message, 0) == message)
-  print("part", part, "matches", res)
-
-
-for part in range(2):
-  with open('19.in', 'r') as f:
-    ll = f.read().splitlines()
-    do(ll, part + 1)
+  for l in rules.split("\n"):
+    sp = l.split(": ")
+    R[sp[0]] = [ n.strip().split(" ") for n in sp[1].split(" | ") ]
+  for part in range(1, 3):
+    if part == 2:
+      R["8"] = [["42"], ["42", "8"]]
+      R["11"] = [["42", "31"], ["42", "11", "31"]]
+    res = 0
+    for m in mm:
+      res += (matchstr(R, "0", m, 0) == m)
+    print("part", part, "matches", res)
 
