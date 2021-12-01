@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ -z ${1+x} ]; then
+  d="$(date '+%d' | sed 's/^0//g')"
+else
+  d=$1
+fi
+
+echo "good luck with day $d \o/"
+
+./fetch $d
+
+echo "#"'!'"/usr/bin/env python" > $d.py
+echo >> $d.py
+
+echo "with open('$d.in', 'r') as f:" >> $d.py
+echo "  ll = f.readlines()" >> $d.py
+echo >> $d.py
+
