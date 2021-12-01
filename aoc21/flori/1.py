@@ -4,10 +4,8 @@ def j1(ll):
   c = 0
   prev = ll[0]
   for l in ll[1:]:
-    curr = l
-    if curr > prev:
-      c += 1
-    prev = curr
+    c += l > prev
+    prev = l
   return c
 
 

@@ -6,7 +6,7 @@ else
   d=$1
 fi
 
-echo "good luck with day $d \o/"
+echo "it's $(date +%H:%m:%S) good luck with day $d \o/"
 
 ./fetch $d
 
