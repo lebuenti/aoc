@@ -1,30 +1,10 @@
-const fs = require("fs");
+const readDataAsLine = require("../util");
 
-const exampleInput = "./exampleInput01.txt";
-const input = "./input01.txt";
-
-const readDataAsLine = (filePath) => {
-  const puzzleInput = fs.readFileSync(filePath, {
-    encoding: "utf8",
-    flag: "r",
-  });
-  a = [];
-  let beginLine = 0;
-  for (let i = 0; i < puzzleInput.length; i++) {
-    if (puzzleInput[i] === "\n") {
-      let line = "";
-      for (let j = beginLine; j < i; j++) {
-        line += puzzleInput[j];
-      }
-      a.push(line);
-      beginLine = i + 1;
-    }
-  }
-  return a;
-};
+const exampleInput = "./day01/exampleInput01.txt";
+const input = "./day01/input01.txt";
 
 const part1 = () => {
-  const a = readDataAsLine(input);
+  const a = readDataAsLine.readDataAsLine(input);
 
   let increaseCounter = 0;
   for (let i = 0; i < a.length; i++) {
@@ -37,7 +17,7 @@ const part1 = () => {
 };
 
 const part2 = () => {
-  const puzzleInput = readDataAsLine(input);
+  const puzzleInput = readDataAsLine.readDataAsLine(input);
 
   let sums = [];
   for (let i = 0; i < puzzleInput.length - 2; i++) {
