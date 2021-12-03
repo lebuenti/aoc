@@ -6,7 +6,7 @@ else
   d=$1
 fi
 
-echo "it's $(date +%H:%m:%S) good luck with day $d \o/"
+echo "good luck with day $d \o/"
 
 ./fetch $d
 
@@ -14,6 +14,9 @@ echo "#"'!'"/usr/bin/env python" > $d.py
 echo >> $d.py
 
 echo "with open('$d.in', 'r') as f:" >> $d.py
-echo "  ll = f.readlines()" >> $d.py
+echo "  ll = f.read().splitlines()" >> $d.py
 echo >> $d.py
+
+open https://adventofcode.com/2021/day/$d
+vi $d.py
 
