@@ -8,4 +8,12 @@ function readDataAsLine(filePath) {
   return puzzleInput.split("\n");
 }
 
-module.exports = { readDataAsLine };
+function readDataAsString(filePath) {
+  const puzzleInput = fs.readFileSync(filePath, {
+    encoding: "utf8",
+    flag: "r",
+  });
+  return puzzleInput;
+}
+
+module.exports = { readDataAsLine, readDataAsString };
