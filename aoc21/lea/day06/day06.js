@@ -19,12 +19,12 @@ const solution = (days) => {
     fishes.filter((elem) => elem === 8).length,
   ];
 
-  //                                           0 1 2 3 4 5 6 7 8
-  //                                           -----------------
-  //amount fishes                              0 1 1 2 1 0 0 0 0
-  //shift + a[6] = leftElem & a[8] = leftElem  1 1 2 1 0 0 0 0 0
-  //shift + a[6] = leftElem & a[8] = leftElem  1 2 1 0 0 0 1 0 1
-  //shift + a[6] = leftElem & a[8] = leftElem  2 1 0 0 0 1 1 1 1
+  //                                            0 1 2 3 4 5 6 7 8
+  //                                            -----------------
+  //amount fishes                               0 1 1 2 1 0 0 0 0
+  //shift & a[6] += leftElem & a[8] = leftElem  1 1 2 1 0 0 0 0 0
+  //shift & a[6] += leftElem & a[8] = leftElem  1 2 1 0 0 0 1 0 1
+  //shift & a[6] += leftElem & a[8] = leftElem  2 1 0 0 0 1 1 1 1
 
   for (let day = 1; day <= days; day++) {
     let leftFish = fishCounter.shift();
