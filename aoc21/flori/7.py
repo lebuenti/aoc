@@ -24,8 +24,7 @@ with open('7.in', 'r') as f:
       if ldiff not in DP:
         DP[ldiff] = triang(ldiff)
       cdiff += DP[ldiff]
-    if cdiff < diff:
-      diff = cdiff
+    diff = min(cdiff, diff)
 
   print(diff)
 
