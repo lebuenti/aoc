@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 
 def neigh(G, r, c, idx=False):
-  res = []
-  if r-1 >= 0:
-    res.append((r-1, c) if idx else G[r-1][c])
-  if r+1 < len(G):
-    res.append((r+1, c) if idx else G[r+1][c])
-  if c-1 >= 0:
-    res.append((r, c-1) if idx else G[r][c-1])
-  if c+1 < len(G[r]):
-    res.append((r, c+1) if idx else G[r][c+1])
-  return res
+  coords = {
+    (max(0,r-1), c), (min(len(G)-1,r+1), c),
+    (r, max(0, c-1)), (r, min(len(G[r])-1, c+1)),
+  }
+  coords = [coo for coo in coords if coo != (r,c)]
+  return coords if idx else [G[nr][nc] for nr,nc in coords]
 
 
 def j1():
