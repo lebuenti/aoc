@@ -1,39 +1,17 @@
 #!/usr/bin/env python
 
-import re
-
-  
-def nice(G):
-  for y in G:
-    for x in y:
-      print(x, end='')
-    print()
-  print()
-
-
-def merge(g1, g2):
-  new = []
-  for y in range(len(g1)):
-    new.append(['.'] * len(g1[y]))
-    for x in range(len(g1[y])):
-      if g1[y][x] == '#' or g2[y][x] == '#':
-        new[y][x] = '#'
-  return new
-
-
 with open('13.in', 'r') as f:
-  ll = f.read().splitlines()
+  reada, readb = f.read().split('\n\n')
 
-dots, folds = [], []
-doingfordots = True
-for l in ll:
-  if l == '':
-    doingfordots = False
-  elif doingfordots:
-    dots.append(tuple([int(i) for i in l.split(',')]))
-  else:
-    c, num = re.findall("^fold along ([xy])=([0-9]+)$", l)[0]
-    folds.append((c, int(num)))
+dots = []
+for ra in reada.splitlines():
+    dots.append(tuple(map(int, ra.split(','))))
+
+folds = []
+for rb in readb.splitlines():
+  one, two = rb.split('=')
+  c, num = one[-1], int(two)
+  folds.append((c, int(num)))
   
 w, h = max([d[0] for d in dots])+1, max([d[1] for d in dots])+1
 G = [['.'] * w for i in range(h)]
@@ -42,24 +20,29 @@ for x,y in dots:
 
 for ax,n in folds:
   if ax == 'y':
-    if '#' in G[n]:
-      raise Exception()
-    G = merge(G[:n], G[n+1:][::-1])
+    g1, g2 = G[:n], G[n+1:][::-1]
     h //= 2
   elif ax == 'x':
     g1, g2 = [], []
     for y in range(h):
       g1.append(G[y][:n])
       g2.append(G[y][n+1:][::-1])
-    G = merge(g1, g2)
     w //= 2
+
+  new = []
+  for y in range(len(g1)):
+    new.append(['.'] * len(g1[y]))
+    for x in range(len(g1[y])):
+      new[y][x] = '#' if '#' in g1[y][x]+g2[y][x] else '.'
+  G = new
+
   print(ax,n)
-  nice(G)
-    
+  for y in G:
+    for x in y:
+      print(x, end='')
+    print()
+  print()
+
+
 print(len([x for g in G for x in g if x == '#']))
 
-  
-
-
-
-  
