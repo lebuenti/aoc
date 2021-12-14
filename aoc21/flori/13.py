@@ -21,13 +21,20 @@ for x,y in dots:
 for ax,n in folds:
   if ax == 'y':
     g1, g2 = G[:n], G[n+1:][::-1]
-    h //= 2
+    diff = len(g1) - len(g2)
+    if diff != 0:
+      pad = g2 if diff > 0 else g1
+      pad.insert(0, ['.'] * len(G[-1]))
   elif ax == 'x':
     g1, g2 = [], []
-    for y in range(h):
+    for y in range(len(G)):
       g1.append(G[y][:n])
       g2.append(G[y][n+1:][::-1])
-    w //= 2
+      diff = len(g1[-1]) - len(g2[-1])
+      if diff != 0:
+        pad = g2 if diff > 0 else g1
+        for i in range(abs(diff)):
+          pad[-1].insert(0, '.')
 
   new = []
   for y in range(len(g1)):
