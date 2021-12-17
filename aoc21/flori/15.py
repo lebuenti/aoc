@@ -46,6 +46,7 @@ class Vertex:
     return (o.x, o.y) == (self.x, self.y)
     
 
+# TODO implement dijkstra with heap optimization
 def Dial(grid, src):
   L = len(grid) * len(grid[0])
 
