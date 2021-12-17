@@ -11,7 +11,7 @@ with open('17.in', 'r') as f:
 max_py = 0
 inits = set()
 
-for init_vy in range(ty[0]-1, abs(ty[0]-ty[1])*3):  # 3 is arbitrary
+for init_vy in range(ty[0]-1, max(abs(ty[0]), abs(ty[1]))):
   px, py = 0, 0
   vx, vy = 0, init_vy
 
