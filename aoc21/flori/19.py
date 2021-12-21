@@ -102,6 +102,9 @@ for c, sc in enumerate(scanners[1:]):
       perm_mx_matches = mx_matches
       perm_mn_unseen = mn_unseen
 
+      if mx_matches >= 12:
+        break
+
   for un in perm_mn_unseen:
     exist = False
     for b in beacons:
