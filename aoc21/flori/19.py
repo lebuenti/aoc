@@ -33,7 +33,7 @@ def permute():
   yield lambda a, b, c: (-b, -a, -c)
   yield lambda a, b, c: (-a, -c, -b)
 
-inp = 'example.in'
+inp = '19.in'
 
 with open(inp, 'r') as f:
   ll = f.read().splitlines()
@@ -50,6 +50,7 @@ for l in ll:
 
 
 beacons = [*scanners[0]]
+sc_positions = [(0,0,0)]
 
 T = 1000  # max distance for a scanner to discover beacons
 
@@ -67,8 +68,8 @@ for c, sc in enumerate(scanners[1:]):
       for i in range(len(sc)):
         stck = np.stack([perm(*sc[i]), beacons[ri]])
         diff = np.diff(stck, axis=0).squeeze()
-
         sc_pos = np.zeros(3, int) + diff
+
         already, unseen, matches = [ri], [], 1
         range_beacs = []
         for beac in beacons:
@@ -97,14 +98,17 @@ for c, sc in enumerate(scanners[1:]):
         if matches > mx_matches:
           mx_matches = matches
           mn_unseen = unseen
+          f_sc_pos = sc_pos
 
     if mx_matches > perm_mx_matches:
       perm_mx_matches = mx_matches
       perm_mn_unseen = mn_unseen
+      perm_f_sc_pos = f_sc_pos
 
       if mx_matches >= 12:
         break
 
+  sc_positions.append(tuple(perm_f_sc_pos.tolist()))
   for un in perm_mn_unseen:
     exist = False
     for b in beacons:
@@ -114,6 +118,8 @@ for c, sc in enumerate(scanners[1:]):
     if not exist:
       beacons.append(un)
 
+
+print('sc_positions', sc_positions)
 print(beacons)
 print(len(beacons), 'beacons')
 
