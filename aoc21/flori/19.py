@@ -75,6 +75,8 @@ for c, sc in enumerate(scanners[1:]):
           dists = np.absolute(np.diff(np.stack([beac, sc_pos]), axis=0))
           if np.all(dists <= T):
             range_beacs.append(beac)
+          if len(range_beacs) >= 12:
+            break
         for k in range(len(sc)):
           if k == i:
             continue
