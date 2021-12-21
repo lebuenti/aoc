@@ -91,6 +91,9 @@ for c, sc in enumerate(scanners[1:]):
           if matches_bef == matches:
             unseen.append(upd)
 
+          if matches + (len(sc)-(k+1)) * (len(range_beacs)-(rk+1)) < mx_matches:
+            break
+
         if matches > mx_matches:
           mx_matches = matches
           mn_unseen = unseen
