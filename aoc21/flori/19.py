@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-from math import inf
 import numpy as np
 from tqdm import tqdm
-from time import time
 
 
 def permute():
@@ -35,14 +33,7 @@ def permute():
   yield lambda a, b, c: (-b, -a, -c)
   yield lambda a, b, c: (-a, -c, -b)
 
-
 inp = 'example.in'
-M = {
-  '2dim.in': 3,
-  '19.in': 12,
-  'perm.in': -1,
-  'example.in': -1,
-}[inp]
 
 with open(inp, 'r') as f:
   ll = f.read().splitlines()
@@ -58,58 +49,42 @@ for l in ll:
     scanners[-1].append(np.array([x,y,z]))
 
 
-def norm(beac):
-  abso = np.absolute(beac)
-  diff = np.diff([abso, np.zeros(len(abso), int)], axis=0).squeeze()
-  mn = np.min(diff)
-  norm = abso - mn
-  return str(np.sum(norm))
-
-
 beacons = [*scanners[0]]
 
-def filt(beacons):
-  s = time()
-  SKIP = 1  # skip every SKIPth beacon in a sorted set
-  stck = np.stack(beacons)
-  res = []
-  for dim in range(3):
-    sort = stck[np.argsort(stck, axis=0)[:,dim]]
-    last = False
-    for i in range(0, len(sort), SKIP):
-      res.append(sort[i])
-      if i+1 == len(sort):
-        last = True
-    if not last:
-      res.append(sort[-1])
-  return res, time()-s
+T = 1000  # max distance for a scanner to discover beacons
 
-
+# sc * perms * beacs * sc * sc * beacs
 for c, sc in enumerate(scanners[1:]):
   perm_mx_matches = 0
   perm_mn_unseen = []
-  filt_beacs, t = filt(beacons)
-  print(f"{c+1} of {len(scanners)-1} scanners, " + \
-        f"{len(beacons)} beacons, filt took {t:.4f}s")
 
-  tt = []
-  for perm in tqdm(permute(), total=24):
+  for perm in (progr := tqdm(permute(), total=24)):
     mx_matches, mn_unseen = 0, []
-    for ri in range(len(filt_beacs)):
+    progr.set_description(
+      f"{c+1} of {len(scanners)-1} scanners, " \
+      f"{len(beacons)} beacons")
+    for ri in range(len(beacons)):
       for i in range(len(sc)):
-        stck = np.stack([perm(*sc[i]), filt_beacs[ri]])
+        stck = np.stack([perm(*sc[i]), beacons[ri]])
         diff = np.diff(stck, axis=0).squeeze()
 
+        sc_pos = np.zeros(3, int) + diff
         already, unseen, matches = [ri], [], 1
+        range_beacs = []
+        for beac in beacons:
+          dists = np.absolute(np.diff(np.stack([beac, sc_pos]), axis=0))
+          if np.all(dists <= T):
+            range_beacs.append(beac)
+        range_beacs = beacons
         for k in range(len(sc)):
           if k == i:
             continue
           upd = perm(*sc[k]) + diff
           matches_bef = matches
-          for rk in range(len(filt_beacs)):
+          for rk in range(len(range_beacs)):
             if rk in already:
               continue
-            if np.all(upd == filt_beacs[rk]):
+            if np.all(upd == range_beacs[rk]):
               already.append(rk)
               matches += 1
           if matches_bef == matches:
