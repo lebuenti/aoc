@@ -9,6 +9,7 @@ for g in G:
   print(g)
 
 SLOTS = 'xxxAxBxCxD'
+Y = (3,2)
 
 COST = {
   'A':    1,
@@ -20,13 +21,16 @@ COST = {
 
 def done(G):
   for fig in ('A', 'B', 'C', 'D'):
-    for y in (2, 3):
+    for y in Y:
       if G[y][SLOTS.index(fig)] != fig:
         return False
   return True
 
+
 def path_free(G, f, t):
   fx,fy = f; tx,ty = t
+  if G[ty][tx] != '.':
+    return False
   S = [f]
   steps = []
   for posf,post in [(fx,tx), (fy,ty)]:
@@ -41,10 +45,6 @@ def path_free(G, f, t):
   return False
 
 
-def where(pred):
-  return [(x,y) for y in range(len(G)) for x in range(len(G[y])) if pred(x,y)]
-
-
 def change(G, f, t):
   G = [*G]
   fx,fy = f; tx,ty = t
@@ -53,6 +53,7 @@ def change(G, f, t):
   G[ty] = G[ty][:tx] + G[fy][fx] + G[ty][tx+1:]
   G[fy] = G[fy][:fx] + '.' + G[fy][fx+1:]
   return G
+
 
 MN = +inf
 DP = {}
@@ -67,30 +68,40 @@ def move(G, curr_cost):
     MN = min(curr_cost, MN)
     return 0
 
-  figs = where(lambda x,y: G[y][x].isalpha())
+  figs = [(x,y) for y in range(len(G)) for x in range(len(G[y])) if G[y][x].isalpha()]
 
   moves = []
   for fig_x,fig_y in figs:
     fig = G[fig_y][fig_x]
     target_x = SLOTS.index(fig)
+    f = (fig_x, fig_y)
 
-    if fig_x == target_x:
-      if fig_y == 3:
-        continue  # already lowest sltxt position
-      if fig_y == 2 and G[3][target_x] == fig:
-        continue  # already in slot and below as well
+    # check fig's already slotted and nothing foreign below
+    if fig_x == target_x and fig_y != 1:
+      fig_done = True
+      for y in range(fig_y+1, Y[0]+1):
+        if G[y][target_x] != fig:
+          fig_done = False
+          break
+      if fig_done:
+        continue
 
-    if G[3][target_x] == '.' and path_free(G, (fig_x,fig_y), (target_x,3)):
-      # change into bottom
-      moves.append(((fig_x,fig_y), (target_x,3)))
-    elif G[2][target_x] == '.' and G[3][target_x] == fig and path_free(G, (fig_x,fig_y), (target_x,2)):
-      # change into slot above bottom
-      moves.append(((fig_x,fig_y), (target_x,2)))
-    elif fig_y == 2 or (fig_y == 3 and G[2][fig_x] == '.'):
+    # move into slot
+    can_slot = False
+    for y in Y:
+      if G[y][target_x] not in (fig,'.'):
+        break
+      t = (target_x,y)
+      if path_free(G, f, t):
+        moves.append((f,t))
+        can_slot = True
+        break
+
+    if not can_slot and fig_y in Y:
       # change into hallway
-      for cand_x in [1,2,4,6,8,10,11]:
-        if path_free(G, (fig_x,fig_y), (cand_x,1)):
-          moves.append(((fig_x,fig_y), (cand_x,1)))
+      for cand_x in (1,2,4,6,8,10,11):
+        if path_free(G, f, (cand_x,1)):
+          moves.append((f, (cand_x,1)))
 
   if not moves:
     return +inf
