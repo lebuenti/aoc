@@ -2,14 +2,10 @@
 
 from math import inf
 
-with open('23.in', 'r') as f :
+with open('23.in', 'r') as f:
   G = f.read().splitlines()
 
-for g in G:
-  print(g)
-
 SLOTS = 'xxxAxBxCxD'
-Y = (3,2)
 
 COST = {
   'A':    1,
@@ -19,7 +15,7 @@ COST = {
 }
 
 
-def done(G):
+def done(G, Y):
   for fig in ('A', 'B', 'C', 'D'):
     for y in Y:
       if G[y][SLOTS.index(fig)] != fig:
@@ -55,16 +51,13 @@ def change(G, f, t):
   return G
 
 
-MN = +inf
-DP = {}
-def move(G, curr_cost):
-  global DP, MN
+def move(G, curr_cost, Y, DP, MN):
 
   hashG = str(G)
   if hashG in DP:
     return DP[hashG]
 
-  if done(G):
+  if done(G, Y):
     MN = min(curr_cost, MN)
     return 0
 
@@ -113,7 +106,7 @@ def move(G, curr_cost):
     new_curr_cost = curr_cost + mv_cost
     if new_curr_cost >= MN:
       continue
-    tot_cost = mv_cost + move(change(G, f, t), new_curr_cost)
+    tot_cost = mv_cost + move(change(G, f, t), new_curr_cost, Y, DP, MN)
     if tot_cost < mn_cost:
       mn_cost = tot_cost
       mn_move = (f,t)
@@ -121,6 +114,12 @@ def move(G, curr_cost):
   DP[hashG] = mn_cost
   return DP[hashG]
 
-
-print('res', move(G, 0))
+for i in range(2):
+  MN = +inf
+  DP = {}
+  if i == 1:
+    for extra in ('#D#B#A#C#', '#D#C#B#A#'):
+      G.insert(3, '  ' + extra)
+  Y = tuple(range(2, len(G)-1))[::-1]
+  print(move(G, 0, Y, DP, MN))
 
