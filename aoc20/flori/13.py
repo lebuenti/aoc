@@ -16,37 +16,18 @@ def do(ll):
   return ww * bus
 
 def do2(ll):
-  """
-  Reading the Subreddit there are two ways to solve this:
-  1. Chinese Remainder Problem
-  2. Find a pattern to increment t faster
-  """
-  bb = list(map(lambda x: int(x) if x != 'x' else x, ll[0].split(',')))
-  t = bb[0]
-  while 1:
-    t+=bb[0]
-    valid = None
-    for idx,b in enumerate(bb):
-      if idx == 0 or b == 'x':
-        continue
-      if ((t+idx)%b) == 0:
-        valid = True
-      else:
-        valid = False
-        break
-    if valid is None:
-      raise Exception()
-    if valid is True:
-      return t
+  db = [(i,int(l)) for i,l in enumerate(ll.split(',')) if l != 'x']
+  j = db[0][1]
+  ts = 0
+  for d,b in db[1:]:
+    while (ts+d) % b != 0:
+      ts += j
+    j *= b
+  return ts
 
-with open('13.in', 'r') as input:
-  """
-  print("res", do2(["17,x,13,19"]), 3417)
-  print("res", do2(["67,7,59,61"]), 754018)
-  print("res", do2(["67,x,7,59,61"]), 779210)
-  print("res", do2(["67,7,x,59,61"]), 1261476)
-  print("res", do2(["1789,37,47,1889"]), 1202161486)
-  """
-  print("final :")
-  print("res", do2([input.read().splitlines()[1]]))
+with open('13.in', 'r') as f:
+  ll = f.read().splitlines()
+
+print(do(ll))
+print(do2(ll[1]))
 
