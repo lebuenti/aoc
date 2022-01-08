@@ -10,7 +10,8 @@ for noun in range(0,99+1):
     ic = IntCode(r)
     ic[1] = noun
     ic[2] = verb
-    if ic()[0] == 19690720:
+    ic()
+    if ic.nn[0] == 19690720:
       print(100*noun+verb)
       exit()
 
