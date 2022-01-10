@@ -31,4 +31,4 @@ for t in range(TALL):
     v = [l[t][w] for l in L if l[t][w] != 2][0]
     print('x' if v == 1 else ' ', end='')
   print()
-        
+

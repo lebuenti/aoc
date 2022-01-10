@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
+from collections import defaultdict
+
 class IntCode:
   def __init__(self, program, inputs=None):
-    self.nn = list(map(int, program.split(',')))
+    nn_values = list(map(int, program.split(',')))
+    self.nn = defaultdict(lambda: 0, zip(range(len(nn_values)), nn_values))
     self.inputs = None if inputs is None else [*inputs]
     self.idx = 0
+    self.rb = 0
 
   def __call__(self, dd=False):
     out = []
@@ -14,7 +18,7 @@ class IntCode:
       dd and print(self.idx)
       self.op = str(self.nn[self.idx]).zfill(5)
       opcode = self.op[-2:]
-      dd and print(opcode, list(zip(range(len(self.nn)), self.nn)))
+      dd and print(opcode, dict(self.nn))
 
       idx_bef = self.idx
       incr = 0
@@ -23,18 +27,19 @@ class IntCode:
       elif opcode == "01":
         # addition
         a,b = self.pp(2)
-        self.nn[self.nn[self.idx+3]] = a+b
+        self.nn[self.p(3, True)] = a+b
         incr+=4
       elif opcode == "02":
         # multiplication
         a,b = self.pp(2)
-        self.nn[self.nn[self.idx+3]] = a*b
+        self.nn[self.p(3, True)] = a*b
         incr+=4
       elif opcode == "03":
         # change to address
         if self.inputs:
-          self.nn[self.nn[self.idx+1]] = self.inputs.pop(0)
+          self.nn[self.p(1, True)] = self.inputs.pop(0)
         else:
+          #print("HALTED")
           return out
         incr+=2
       elif opcode == "04":
@@ -56,13 +61,17 @@ class IntCode:
       elif opcode == "07":
         # less than
         a,b = self.pp(2)
-        self.nn[self.nn[self.idx+3]] = int(a < b)
+        self.nn[self.p(3, True)] = int(a < b)
         incr+=4
       elif opcode == "08":
         # equals
         a,b = self.pp(2)
-        self.nn[self.nn[self.idx+3]] = int(a == b)
+        self.nn[self.p(3, True)] = int(a == b)
         incr+=4
+      elif opcode == "09":
+        # relative base offset
+        self.rb += self.p(1)
+        incr+=2
       else:
         raise Exception("invalid opcode: " + opcode)
 
@@ -76,9 +85,23 @@ class IntCode:
     return [self.p(i) for i in range(1,q+1)]
 
 
-  def p(self, i):
+  def p(self, i, write_mode=False):
     v = self.nn[self.idx+abs(i)]
-    return v if self.op[-2-i] == '1' else self.nn[v]
+    m = self.op[-2-i]
+    if m == '0':
+      # position
+      if write_mode:
+        return v
+      return self.nn[v]
+    elif m == '1':
+      # immediate
+      assert not write_mode
+      return v
+    elif m == '2':
+      # relative
+      if write_mode:
+        return self.rb + v
+      return self.nn[self.rb + v]
 
 
   def done(self):
@@ -96,5 +119,8 @@ class IntCode:
     self.nn[idx] = v
 
   def __repr__(self):
-    return ','.join(map(str, self.nn))
+    res = []
+    for k in sorted(self.nn.keys()):
+      res.append(str(self.nn[k]))
+    return ','.join(res)
 
