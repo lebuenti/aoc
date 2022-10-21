@@ -46,8 +46,8 @@ for part in (1,2):
   maxx, minx = max(xs), min(xs)
   maxy, miny = max(ys), min(ys)
   print('part2:');
-  for y in range(maxy+1):
-    for x in range(maxx+1):
-      print(P[(x+minx,y+miny)] or ' ', end='')
+  for y in range(miny, maxy+1):
+    for x in range(minx, maxx+1):
+      print(P[(x,y)] or ' ', end='')
     print()
 
