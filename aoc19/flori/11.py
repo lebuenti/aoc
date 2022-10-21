@@ -48,6 +48,6 @@ for part in (1,2):
   print('part2:');
   for x in range(maxy+1):
     for y in range(maxx+1):
-      print(P[(y-miny,x-minx)] or ' ', end='')
+      print(P[(y+miny,x+minx)] or ' ', end='')
     print()
 
