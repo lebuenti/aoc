@@ -42,12 +42,9 @@ for part in (1,2):
     print('part1:', len(P))
     continue
 
-  maxx, minx = \
-    max([x for x,y in P.keys()]), \
-    min([x for x,y in P.keys()])
-  maxy, miny = \
-    max([y for x,y in P.keys()]), \
-    min([y for x,y in P.keys()])
+  xs, ys = zip(*P.keys())
+  maxx, minx = max(xs), min(xs)
+  maxy, miny = max(ys), min(ys)
   print('part2:');
   for x in range(maxy+1):
     for y in range(maxx+1):
