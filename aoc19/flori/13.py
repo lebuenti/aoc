@@ -46,10 +46,9 @@ while 2 in [g[2] for g in G] or not init:
   #        print(ident or ' ', end='')
   #  print()
   #print()
-  ball = [g for g in G if g[2] == 4][0]
-  paddle = [g for g in G if g[2] == 3][0]
-  ic.inputs = \
-    [-1 if paddle[0] > ball[0] else 0 if paddle[0] == ball[0] else +1]
+  ball = [g[0] for g in G if g[2] == 4][0]
+  paddle = [g[0] for g in G if g[2] == 3][0]
+  ic.inputs = [-1 if paddle > ball else 0 if paddle == ball else +1]
 print('part2:', score)
 
 
