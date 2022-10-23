@@ -5,6 +5,18 @@ from collections import defaultdict
 
 r = open('13.in', 'r').read()
 
+def prettyp(G):
+  mxx, mxy = 0, 0
+  for x,y,_ in G:
+    mxx = max(x, mxx)
+    mxy = max(y, mxy)
+  for y in range(mxy+1):
+    for x in range(mxx+1):
+      for gx,gy,ident in G:
+        if gx == x and gy == y:
+          print(ident or ' ', end='')
+    print()
+
 ic = IntCode(r)
 out = ic()
 assert ic.done()
@@ -15,7 +27,6 @@ for i in range(0, len(out), 3):
     B[x,y] = ident
 print('part1:', len(B))
 
-mxx, mxy = 0, 0
 score = None
 G = []
 init = False
@@ -29,8 +40,6 @@ while 2 in [g[2] for g in G] or not init:
     else:
       if not init:
         G.append([x,y,ident])
-        mxx = max(mxx, x)
-        mxy = max(mxy, y)
       else:
         for i in range(len(G)):
           gx,gy,_ = G[i]
@@ -38,14 +47,9 @@ while 2 in [g[2] for g in G] or not init:
             G[i][2] = ident
             break
   init = True
-  # print
-  #for y in range(mxy+1):
-  #  for x in range(mxx+1):
-  #    for gx,gy,ident in G:
-  #      if gx == x and gy == y:
-  #        print(ident or ' ', end='')
-  #  print()
+  #prettyp(G)
   #print()
+  #input()
   ball = [g[0] for g in G if g[2] == 4][0]
   paddle = [g[0] for g in G if g[2] == 3][0]
   ic.inputs = [-1 if paddle > ball else 0 if paddle == ball else +1]
