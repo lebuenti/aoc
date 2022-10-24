@@ -17,7 +17,6 @@ for l in ll:
 
 def getore(fuel):
   surp = defaultdict(int)
-  reqs = defaultdict(int)
   S = [(fuel, 'FUEL')]
   ore = 0
   while len(S):
