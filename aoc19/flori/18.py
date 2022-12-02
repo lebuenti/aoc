@@ -2,90 +2,107 @@
 
 from collections import deque
 from math import inf
+import heapq
 
-def iskey(g):
-  return g.isalpha() and g.islower()
-
-def isdoor(g):
-  return g.isalpha() and g.isupper()
-
-def iswalkable(g, coll):
-  return g.lower() in coll or iskey(g) or g == '.' or g == '@'
-
-def nice(x,y,coll):
-  print()
-  print((x,y), coll)
-  for gy in range(len(G)):
-    for gx in range(len(G[y])):
-      p = None
-      g = G[gy][gx]
-      if x == gx and y == gy:
-        p = '@'
-      elif g.lower() in coll or g == '@':
-        p = '.'
-      print(p or g, end='')
-    print()
-
-L = open('18.in', 'r').read()
-#L = """
-##########
-##b.A.@.a#
-##########
-#"""
-#L = """
-#########################
-##f.D.E.e.C.b.A.@.a.B.c.#
-#######################.#
-##d.....................#
-#########################
-#"""
-G = L.strip().splitlines()
+G = open('18.in', 'r').read().strip().splitlines()
 root = None
-keys = set()
+K = {}
 for y in range(len(G)):
   for x in range(len(G[y])):
     if G[y][x] == '@':
+      assert root is None
       root = x,y
-    if iskey(G[y][x]):
-      keys.add(G[y][x])
-    print(G[y][x], end='')
-  print()
+      # remove @ from grid
+      G[y] = G[y][:x] + '.' + G[y][x+1:]
+    if G[y][x].isalpha() and G[y][x].islower():
+      K[G[y][x]] = (x,y)
 
-print(root)
-print(keys)
+# all unidirectional key and @ to key edges
+M = {'@': {k: None for k in K.keys()}}
+keys = sorted(list(K.keys()))
+for i in range(len(keys)):
+  M[keys[i]] = {}
+  for k in range(i+1, len(keys)):
+    M[keys[i]][keys[k]] = None
 
-def neighs(x,y,coll):
-  cands = [(x+1,y), (x-1,y), (x,y+1), (x,y-1)]
-  ret = []
-  for x1,y1 in cands:
-    if x1 >= 0 and x1 < len(G[y]) \
-    and y1 >= 0 and y1 < len(G) \
-    and iswalkable(G[y1][x1], coll):
-      ret.append((x1,y1))
-  return ret
+def neighs(x,y,coll=list(K.keys())):
+  nn = []
+  for c in [(x+1,y),(x-1,y),(x,y+1),(x,y-1)]:
+    try:
+      g = G[c[1]][c[0]]
+    except IndexError:
+      continue
+    if g == '.':
+      nn.append(c)
+    elif g.isalpha():
+      if g.islower():
+        nn.append(c)
+      elif g.lower() in coll:
+        nn.append(c)
+  return nn
 
-pp = []
-Q = deque([(set(),[],root)])
-mn = inf
-while len(Q) > 0:
-  coll,path,(x,y) = Q.pop()
-  g = G[y][x]
-  if colled := iskey(g) and g not in coll:
-    coll = {*coll, g}
-  prev = None if len(path) == 0 else path[-1]
-  path = [*path, (x,y)]
-  if len(path) >= mn:
+# bfs to find all keys
+for f,tx in M.items():
+  if f == keys[-1]:
+    # already found everything toward last letter
     continue
-  if coll == keys:
-    pp.append(path)
-    print(len(path)-1)
-    mn = min(len(path)-1, mn)
-    continue
-  for n in neighs(x,y,coll):
-    if colled or n != prev:
-      Q.append((coll,path,n))
+  for t in tx.keys():
+    start = root if f == '@' else K[f]
+    Q = deque([(set(),set(),[],start)])
+    while Q:
+      seen,doors,path,(x,y) = Q.popleft()
+      g = G[y][x]
+      seen = {(x,y), *seen}
+      path = [*path,(x,y)]
+      if g == t:
+        M[f][t] = (len(path)-1, doors)
+        if f != '@':
+          M[t][f] = M[f][t]
+        break
+      else:
+        if g.isalpha() and g.isupper():
+          if f == '@':
+            continue
+          doors = {g.lower(), *doors}
+        for n in neighs(x,y):
+          if n not in seen:
+            Q.append((seen,doors,path,n))
 
-for p in pp:
-  print(len(p)-1, p)
-print('part1:', min([len(p)-1 for p in pp]))
+# remove edges from @ that lead nowhere
+M['@'] = {k: v for k,v in M['@'].items() if v is not None}
+
+def expand(n):
+  key,keys = n
+  if len(K) == len(keys):
+    return [(0, target)]
+  rett = []
+  for v,(cost,doors) in M[key].items():
+    if v in keys:
+      continue
+    if not doors.issubset(keys):
+      continue
+    rett.append((cost,(v,frozenset({*keys, v}))))
+  return rett
+
+src = ('@', frozenset())
+# fictional zero cost target node added when all keys collected
+target = ('YAY', frozenset())
+seen = set()
+G = {src: 0}
+P = {}
+Q = [(0, 0, src)]
+# dijkstra expanding nodes on-demand
+while Q:
+  f,g,n = heapq.heappop(Q)
+  if n in seen:
+    continue
+  if target == n:
+    break
+  for cost,v in expand(n):
+    vg = g + cost
+    if v not in G or vg < G[v]:
+      P[v] = n
+      G[v] = vg
+      heapq.heappush(Q, (vg, vg, v))
+print(G[target])
 
