@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ -z ${1+x} ]; then
+  d="$(date '+%d' | sed 's/^0//g')"
+else
+  d=$1
+fi
+
+y="20$(pwd | grep -o '[0-9]*')"
+
+curl "https://adventofcode.com/$y/day/$d/input" \
+  -H "Cookie: session=$AOC;" \
+  -H 'Accept: text/html,text/plain' \
+  -H 'Pragma: no-cache' \
+  -H 'Cache-Control: no-cache' > $d.in
+
+echo "#"'!'"/usr/bin/env python3" > $d.py
+echo >> $d.py
+
+echo "ll = open('$d.in').read().splitlines()" >> $d.py
+echo >> $d.py
+
+echo "good luck with day $d of $y \o/"
+
+open https://adventofcode.com/$y/day/$d
+vi $d.py
+
