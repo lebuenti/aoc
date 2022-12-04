@@ -99,7 +99,6 @@ for step in (1,2):
   Q = [(0, 0, src)]
   while Q:
     f,g,n = heapq.heappop(Q)
-    brk = False
     if n in seen:
       continue
     seen.add(n)
