@@ -16,10 +16,10 @@ for part in (1,2):
       idx += 1
 
   for num,fr,to in mm:
+    mv = S[fr][:num]
     if part == 1:
-      S[to] = [*S[fr][:num][::-1], *S[to]]
-    else:
-      S[to] = [*S[fr][:num], *S[to]]
+      mv = mv[::-1]
+    S[to] = [*mv, *S[to]]
     S[fr] = S[fr][num:]
   print(''.join([S[i][0] for i in range(1, len(S))]))
 
