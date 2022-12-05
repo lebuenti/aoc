@@ -41,8 +41,6 @@ for step in (1,2):
         continue
       if g != '#':
         nn.append(c)
-      #if g == '.' or g.isalpha():
-      #  nn.append(c)
     return nn
 
   # bfs to find all keys
