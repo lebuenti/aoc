@@ -5,12 +5,13 @@ from collections import deque
 ll = open('22.in').read().splitlines()
 
 T = 10006
-S = deque(list(range(0,T+1)))
 
 for l in ll:
   if l == "deal into new stack":
     # in-place
+    print(S[100])
     S.reverse()
+    print(S[100])
   elif l.startswith("cut "):
     # in-place
     cut = int(l.split(' ')[1])
