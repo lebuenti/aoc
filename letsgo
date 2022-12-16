@@ -17,7 +17,8 @@ curl "https://adventofcode.com/$y/day/$d/input" \
 echo "#"'!'"/usr/bin/env python3" > $d.py
 echo >> $d.py
 
-echo "ll = open('$d.in').read().splitlines()" >> $d.py
+echo "L = open('$d.in').read()" >> $d.py
+echo "ll = L.splitlines()" >> $d.py
 echo >> $d.py
 
 echo "good luck with day $d of $y \o/"
