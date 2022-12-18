@@ -49,9 +49,9 @@ for part in (1,2):
   END = 26 if part == 2 else 30
   mx = -1
   seen = set()
-  Q = deque([(1, frozenset(), 0, ('AA', 0), ('AA', 0))])
-  while Q:
-    V = Q.pop()
+  S = [(1, frozenset(), 0, ('AA', 0), ('AA', 0))]
+  while S:
+    V = S.pop()
     m, releasing, released, (va,ma), (vb,mb) = V
 
     # processing what comes first by minute m
@@ -84,7 +84,7 @@ for part in (1,2):
 
     released += sum(G[v1][0] for v1 in releasing)
 
-    if releasing == pressurized: # all open
+    if releasing == pressurized:  # all open
       mx = max(mx, released + maxrelease * (END - m))
       continue
 
@@ -99,14 +99,14 @@ for part in (1,2):
       for na in M[va]:
         if na in releasing:
           continue
-        Q.append((m, releasing, released, (na, M[va][na] + 1), (vb, +inf)))
+        S.append((m, releasing, released, (na, M[va][na] + 1), (vb, +inf)))
     else:
       add = False
       for vn in M[v]:
         if vn in releasing or vn == vo:
           continue
         add = True
-        Q.append((
+        S.append((
           m,
           releasing,
           released,
@@ -114,7 +114,7 @@ for part in (1,2):
           (vo, mo - vm),
         ))
       if not add:
-        Q.append((
+        S.append((
           m,
           releasing,
           released,
