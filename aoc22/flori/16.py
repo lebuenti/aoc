@@ -54,7 +54,12 @@ for part in (1,2):
     V = S.pop()
     m, releasing, released, (va,ma), (vb,mb) = V
 
-    # processing what comes first by minute m
+    if V in seen:
+      continue
+    seen.add(V)
+
+    # processing what comes first by minute
+    mbef = m
     if ma <= mb:
       m = m + ma
       v = va
@@ -68,27 +73,24 @@ for part in (1,2):
       vo = va
       mo = ma
 
-    released += sum(G[v1][0] for v1 in releasing) * (vm - 1)
-
     if m > END:
-      released -= (m - END - 1) * sum(G[v1][0] for v1 in releasing)
+      released += (END - mbef) * sum(G[v1][0] for v1 in releasing)
       mx = max(mx, released)
       continue
 
+    released += sum(G[v1][0] for v1 in releasing) * (vm - 1)
+
     if v != 'AA':
       releasing = frozenset({*releasing, v})
-
-    if V in seen:
-      continue
-    seen.add(V)
-
     released += sum(G[v1][0] for v1 in releasing)
 
-    if releasing == pressurized:  # all open
+    if releasing == pressurized:
+      # all pressurized valves open
       mx = max(mx, released + maxrelease * (END - m))
       continue
 
     if mx >= released + maxrelease * (END - m):
+      # perfect outcome couldn't exceed current mx
       continue
 
     if m == END:
@@ -99,7 +101,13 @@ for part in (1,2):
       for na in M[va]:
         if na in releasing:
           continue
-        S.append((m, releasing, released, (na, M[va][na] + 1), (vb, +inf)))
+        S.append((
+          m,
+          releasing,
+          released,
+          (na, M[va][na] + 1),
+          (vb, +inf)
+        ))
     else:
       add = False
       for vn in M[v]:
@@ -114,6 +122,7 @@ for part in (1,2):
           (vo, mo - vm),
         ))
       if not add:
+        # all valves open, finish off
         S.append((
           m,
           releasing,
