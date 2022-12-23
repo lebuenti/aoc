@@ -7,12 +7,27 @@ L = open('22.in').read()
 P = open('22sq.in').read().splitlines()
 ll = L.split("\n\n")
 
-# creating the map
 GG = ll[0].splitlines()
+
+# creating the map for part 1
+J = {}
+dirs = '>', 'v', '<', '^'
+start1 = None
+maxx, maxy = -inf, -inf
+for y in range(len(GG)):
+  for x in range(len(GG[y])):
+    if GG[y][x] in ('.', '#'):
+      J[(x,y)] = GG[y][x]
+      if start1 is None and GG[y][x] == '.':
+        start1 = (0, (x,y))
+      maxx = max(maxx, x)
+      maxy = max(maxy, y)
+
+# creating the map for part 2
 N = 50
 G = {i: {} for i in range(1, 6+1)}
 dirs = '>', 'v', '<', '^'
-path = [(2, 0, (0,0))]
+start2 = (2, 0, (0,0))
 MAX_X = {i: -inf for i in range(1, 6+1)}
 MIN_X = {i: +inf for i in range(1, 6+1)}
 MAX_Y = {i: -inf for i in range(1, 6+1)}
@@ -83,47 +98,106 @@ insts = list(zip(gos2,gos1))
 
 # let's go
 goin = [(+1,0), (0,+1), (-1,0), (0,-1)]
-first = True
-for i,(d,n) in enumerate(insts):
-  # update facing direction
-  facing = path[-1][1]
-  assert d == 'L' or d == 'R'
-  if not first:
-    if d == 'L':
-      facing = (facing - 1) % len(dirs)
-    elif d == 'R':
-      facing = (facing + 1) % len(dirs)
-  first = False
+for part in (1,2):
+  first = True
+  path = [start1 if part == 1 else start2]
+  for i,(d,n) in enumerate(insts):
+    # update facing direction
+    facing = path[-1][int(part == 2)]
+    assert d == 'L' or d == 'R'
+    if not first:
+      if d == 'L':
+        facing = (facing - 1) % len(dirs)
+      elif d == 'R':
+        facing = (facing + 1) % len(dirs)
+    first = False
 
-  for go in range(1, n+1):
-    # moving into facing direction 
-    plane = path[-1][0]
-    x,y = path[-1][2]
-    xd, yd = goin[facing]
-    xn, yn = x + xd, y + yd
-
-    if (xn, yn) in G[plane]:
-      # within the same plane
-      if G[plane][xn,yn] == '#':
-        path.append((plane, facing, (x,y)))
-        break
-      elif G[plane][xn,yn] == '.':
-        path.append((plane, facing, (xn,yn)))
+    for go in range(1, n+1):
+      if part == 1:
+        x,y = path[-1][1]
+        xd, yd = goin[facing]
+        xn, yn = x+xd, y+yd
+        if (xn, yn) in J:
+          if J[xn,yn] == '#':
+            path.append((facing, (x,y)))
+            break
+          elif J[xn,yn] == '.':
+            pos = xn, yn
+            path.append((facing, (xn,yn)))
+          else:
+            raise Exception(f"{J[yn][xn]}")
+        else:
+          # gotta wrap
+          if facing == 0:
+            # moving right
+            for x1 in range(xn):
+              if (x1,yn) in J:
+                xn = x1
+                break
+            else:
+              raise Exception("couldn't wrap")
+          elif facing == 1:
+            # moving down
+            for y1 in range(yn):
+              if (xn,y1) in J:
+                yn = y1
+                break
+            else:
+              raise Exception("couldn't wrap")
+          elif facing == 2:
+            # moving left
+            for x1 in range(maxx, -1, -1):
+              if (x1,yn) in J:
+                xn = x1
+                break
+            else:
+              raise Exception("couldn't wrap")
+          elif facing == 3:
+            # moving up
+            for y1 in range(maxy, -1, -1):
+              if (xn,y1) in J:
+                yn = y1
+                break
+            else:
+              raise Exception("couldn't wrap")
+          if J[xn,yn] == '#':
+            path.append((facing, (x,y)))
+            break
+          elif J[xn,yn] == '.':
+            path.append((facing, (xn,yn)))
       else:
-        raise Exception(f"same plane {G[plane][yn][xn]}")
-    else:
-      # wrapping around another plane
-      a = CON[plane][facing][x,y]
-      nplane, f, (xn,yn) = a
-      if G[nplane][xn,yn] == '#':
-        path.append((plane, facing, (x,y)))
-        break
-      elif G[nplane][xn,yn] == '.':
-        path.append(a)
-        facing = f
-      else:
-        raise Exception(f"wrap around {G[plane][yn][xn]}")
+        # moving into facing direction
+        plane = path[-1][0]
+        x,y = path[-1][2]
+        xd, yd = goin[facing]
+        xn, yn = x + xd, y + yd
 
-p, f, (x,y) = path[-1]
-print(1000 * (y + 1 + MIN_Y[p]) + 4 * (x + 1 + MIN_X[p]) + f)
+        if (xn, yn) in G[plane]:
+          # within the same plane
+          if G[plane][xn,yn] == '#':
+            path.append((plane, facing, (x,y)))
+            break
+          elif G[plane][xn,yn] == '.':
+            path.append((plane, facing, (xn,yn)))
+          else:
+            raise Exception(f"same plane {G[plane][yn][xn]}")
+        else:
+          # wrapping around another plane
+          a = CON[plane][facing][x,y]
+          nplane, f, (xn,yn) = a
+          if G[nplane][xn,yn] == '#':
+            path.append((plane, facing, (x,y)))
+            break
+          elif G[nplane][xn,yn] == '.':
+            path.append(a)
+            facing = f
+          else:
+            raise Exception(f"wrap around {G[plane][yn][xn]}")
+
+  if part == 1:
+    f, (x,y) = path[-1]
+    print(1000 * (y + 1) + 4 * (x + 1) + f)
+  else:
+    p, f, (x,y) = path[-1]
+    print(1000 * (y + 1 + MIN_Y[p]) + 4 * (x + 1 + MIN_X[p]) + f)
 
