@@ -27,7 +27,7 @@ for y in range(len(GG)):
 N = 50
 G = {i: {} for i in range(1, 6+1)}
 dirs = '>', 'v', '<', '^'
-start2 = (2, 0, (0,0))
+start2 = (0, (0,0), 2)
 MAX_X = {i: -inf for i in range(1, 6+1)}
 MIN_X = {i: +inf for i in range(1, 6+1)}
 MAX_Y = {i: -inf for i in range(1, 6+1)}
@@ -48,7 +48,7 @@ for plane,g in G.items():
     G2[plane][x-MIN_X[plane], y-MIN_Y[plane]] = v
 G = G2
 
-# wrapping around the edges of a cube semi-hardcoded
+# wrapping around the edges of a cube semi-hardcoded (part 2)
 DEF = {  #  >              v              <              ^
   1: ((4, 2,  True), (3, 2, False), (2, 2, False), (6, 3, False)),
   2: ((1, 0, False), (3, 1, False), (5, 0,  True), (6, 0, False)),
@@ -88,7 +88,7 @@ for leaveplane, neighbors in DEF.items():
     # knowing the current plane, facing dir and coordinate
     #  we can get new plane, facing dir and coordinate
     CON[leaveplane][leaveside] = \
-      dict(zip(leave, [(enterplane, enterside, (ex,ey)) for ex,ey in enter]))
+      dict(zip(leave, [(enterside, (ex,ey), enterplane) for ex,ey in enter]))
 
 # creating the instructions
 gos1 = [int(n) for n in re.split('[A-Z]', ll[1].strip())]
@@ -103,7 +103,7 @@ for part in (1,2):
   path = [start1 if part == 1 else start2]
   for i,(d,n) in enumerate(insts):
     # update facing direction
-    facing = path[-1][int(part == 2)]
+    facing = path[-1][0]
     assert d == 'L' or d == 'R'
     if not first:
       if d == 'L':
@@ -113,10 +113,11 @@ for part in (1,2):
     first = False
 
     for go in range(1, n+1):
+      x,y = path[-1][1]
+      xd, yd = goin[facing]
+      xn, yn = x + xd, y + yd
+
       if part == 1:
-        x,y = path[-1][1]
-        xd, yd = goin[facing]
-        xn, yn = x+xd, y+yd
         if (xn, yn) in J:
           if J[xn,yn] == '#':
             path.append((facing, (x,y)))
@@ -135,7 +136,7 @@ for part in (1,2):
                 xn = x1
                 break
             else:
-              raise Exception("couldn't wrap")
+              raise Exception("couldn't wrap right")
           elif facing == 1:
             # moving down
             for y1 in range(yn):
@@ -143,7 +144,7 @@ for part in (1,2):
                 yn = y1
                 break
             else:
-              raise Exception("couldn't wrap")
+              raise Exception("couldn't wrap down")
           elif facing == 2:
             # moving left
             for x1 in range(maxx, -1, -1):
@@ -151,7 +152,7 @@ for part in (1,2):
                 xn = x1
                 break
             else:
-              raise Exception("couldn't wrap")
+              raise Exception("couldn't wrap left")
           elif facing == 3:
             # moving up
             for y1 in range(maxy, -1, -1):
@@ -159,7 +160,7 @@ for part in (1,2):
                 yn = y1
                 break
             else:
-              raise Exception("couldn't wrap")
+              raise Exception("couldn't wrap up")
           if J[xn,yn] == '#':
             path.append((facing, (x,y)))
             break
@@ -167,26 +168,22 @@ for part in (1,2):
             path.append((facing, (xn,yn)))
       else:
         # moving into facing direction
-        plane = path[-1][0]
-        x,y = path[-1][2]
-        xd, yd = goin[facing]
-        xn, yn = x + xd, y + yd
-
+        plane = path[-1][-1]
         if (xn, yn) in G[plane]:
           # within the same plane
           if G[plane][xn,yn] == '#':
-            path.append((plane, facing, (x,y)))
+            path.append((facing, (x,y), plane))
             break
           elif G[plane][xn,yn] == '.':
-            path.append((plane, facing, (xn,yn)))
+            path.append((facing, (xn,yn), plane))
           else:
             raise Exception(f"same plane {G[plane][yn][xn]}")
         else:
           # wrapping around another plane
           a = CON[plane][facing][x,y]
-          nplane, f, (xn,yn) = a
+          f, (xn,yn), nplane  = a
           if G[nplane][xn,yn] == '#':
-            path.append((plane, facing, (x,y)))
+            path.append((facing, (x,y), plane))
             break
           elif G[nplane][xn,yn] == '.':
             path.append(a)
@@ -198,6 +195,6 @@ for part in (1,2):
     f, (x,y) = path[-1]
     print(1000 * (y + 1) + 4 * (x + 1) + f)
   else:
-    p, f, (x,y) = path[-1]
+    f, (x,y), p = path[-1]
     print(1000 * (y + 1 + MIN_Y[p]) + 4 * (x + 1 + MIN_X[p]) + f)
 
