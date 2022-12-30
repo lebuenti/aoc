@@ -10,6 +10,7 @@ def preq(c):
 def ready(cc, done):
   return all([c in done for c in cc])
 
+# part 1
 res = ''
 while len(res) < len(FLAT):
   for x in FLAT:
@@ -18,6 +19,7 @@ while len(res) < len(FLAT):
       break
 print(res)
 
+# part 2
 seconds = 0
 STEP = 60
 S = [None] * 5
