@@ -53,5 +53,9 @@ for y in range(N):
       if prev - sm > MXP * 10:
         # wild guess to improve performance
         break
+      # less performance but cannot fail:
+      #if sm + (((N-x)*(N-y)) - (x*(x+s+1))) * MXP < mx:
+      #  # cannot reach current mx
+      #  break
 print(f"{res[0]},{res[1]},{res[2]}")
 
