@@ -12,6 +12,7 @@ curl "https://adventofcode.com/$y/day/$d/input" \
   -H "Cookie: session=$AOC;" \
   -H 'Accept: text/html,text/plain' \
   -H 'Pragma: no-cache' \
+  -H 'User-Agent: github.com/lebuenti/aoc by florian@zemke.io' \
   -H 'Cache-Control: no-cache' > $d.in
 
 echo "#"'!'"/usr/bin/env python3" > $d.py
