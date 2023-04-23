@@ -7,71 +7,73 @@ function multi_array_key_exists($array, $keyRow, $keyColumn) {
     return array_key_exists($keyColumn, $array[$keyRow]);
 }
 
-function beauty_multi_array_printer($array) {
+function beauty_coordinates_printer($array) {
     echo PHP_EOL;
-    foreach($array as $line) {
-        // print("[ ");
-        echo "[ ";
+    foreach ($array as $line) {
+        echo '[ ';
+
+        reset($line);
+        $firstKey = key($line);
+        for ($i = 0; $i < $firstKey; $i++) {
+            echo '., ';
+        }
+
         foreach ($line as $cell) {
-            echo $cell, ", ";
+            echo $cell, ', ';
         }
-        echo " ]", PHP_EOL;
+        echo ' ]', PHP_EOL;
     }
     echo PHP_EOL;
 }
 
-$area = [];
-$overlaps_ids = [];
+function part1() {
+    $area = [];
 
-foreach (file('./inputs/3_example.txt') as $line) {
-    $exploded = explode('@ ', $line);
-    $exploded2 = explode(': ', $exploded[1]);
+    foreach (file('./inputs/3.txt') as $line) {
+        $exploded = explode('@ ', $line);
+        $exploded2 = explode(': ', $exploded[1]);
 
-    $id = substr($exploded[0], 1);
+        $id = substr($exploded[0], 1, 1);
 
-    $point = [
-        "x" => explode(",", $exploded2[0])[0],
-        "y" => explode(",", $exploded2[0])[1]
-    ];
+        $point = [
+            'x' => explode(',', $exploded2[0])[0],
+            'y' => explode(',', $exploded2[0])[1],
+        ];
+        $size = [
+            'w' => explode('x', $exploded2[1])[0],
+            'h' => explode('x', $exploded2[1])[1],
+        ];
 
-    $size = [
-        "w" => explode("x", $exploded2[1])[0],
-        "h" => explode("x", $exploded2[1])[1]
-    ];
-
-    for ($i = $point["x"]; $i <= $point["x"] + $size["w"]; $i++) {
-
-        for ($j = $point["y"]; $j <= $point["y"] + $size["h"]; $j++) {
-
-            if (multi_array_key_exists($area, $i, $j)) {
-                array_push($overlaps_ids, $id);
-
-                if (array_search($area[$i][$j], $overlaps_ids) === false) {
-                    array_push($overlaps_ids, $area[$i][$j]);
+        for ($x = $point['x']; $x < $point['x'] + $size['w']; $x++) {
+            for ($y = $point['y']; $y < $point['y'] + $size['h']; $y++) {
+                if (!multi_array_key_exists($area, $y, $x)) {
+                    $area[$y][$x] = $id;
+                    continue;
+                } else {
+                    $area[$y][$x] = 'X';
                 }
-
-
-            } else {
-                $area[$i][$j] = $id;
             }
-
         }
+
+        ksort($area);
     }
 
-    
+    // beauty_coordinates_printer($area);
 
-    // array_key_exists()
+    $counter = array_reduce(
+        $area,
+        fn($acc, $curr) => $acc +
+            array_reduce(
+                $curr,
+                fn($acc1, $curr1) => $curr1 === 'X' ? $acc1 + 1 : $acc1,
+                0
+            ),
+        0
+    );
 
-    // echo $id, " --", $point["x"], " --", $point["y"], " --", $size["w"], " --", $size["h"];
-
-
-
+    return $counter;
 }
-print("area");
-// print_r($area);
-beauty_multi_array_printer($area);
-print("overlaps_ids");
-    print_r($overlaps_ids);
-    // beauty_multi_array_printer()
+
+echo "part 1: ", part1(), PHP_EOL;
 
 ?>
