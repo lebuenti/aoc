@@ -104,7 +104,7 @@ const part1 = () => {
     }
   }
 
-  return numbers.reduce((acc, number) => (acc += number), 0);
+  return numbers.reduce((acc, number) => acc + number, 0);
 };
 
 const part2 = () => {
