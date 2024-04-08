@@ -18,5 +18,5 @@ for card, (wnn, haves) in C.items():
   for v in range(card + 1, card + len(having) + 1):
     cnt[v] += cnt[card]
 print(sm)
-print(sum(v for v in cnt.values()))
+print(sum(cnt.values()))
 
