@@ -6,7 +6,6 @@ L = open('7.in').read()
 ll = L.splitlines()
 hands, bids = zip(*[(h, int(b)) for h, b in [l.split(" ") for l in ll]])
 
-
 for F in [
   ['A', 'K', 'Q', 'J', 'T', *[str(n) for n in [9, 8, 7, 6, 5, 4, 3, 2]]],
   ['A', 'K', 'Q', 'T', *[str(n) for n in [9, 8, 7, 6, 5, 4, 3, 2]], 'J']
