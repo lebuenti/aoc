@@ -16,26 +16,20 @@ const part1 = (left, right) => {
   left.sort();
   right.sort();
 
-  let sumd = 0;
-
-  for (let i = 0; i < left.length; i++) {
-    sumd += Math.abs(left[i] - right[i]);
-  }
-  return sumd;
+  return left.reduce(
+    (acc, val, idx) => acc + Math.abs(val - right[idx]),
+    0
+  );
 };
 
 const part2 = (left, right) => {
-    right.sort();
+  right.sort();
 
-    let sumM = 0;
-    
-    left.forEach(f => {
-        let amount = right.filter(s => s === f).length;
-        sumM += f * amount;
-    });
-
-    return sumM;
-}
+  return left.reduce(
+    (acc, val) => acc + val * right.filter((s) => s === val).length,
+    0
+  );
+};
 
 readInput("./1-puzzle.txt");
 
