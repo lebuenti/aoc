@@ -31,7 +31,7 @@ const part2 = (left, right) => {
   );
 };
 
-readInput("./1-puzzle.txt");
+readInput("./1-input.txt");
 
 console.log(part1(left, right));
 console.log(part2(left, right));
