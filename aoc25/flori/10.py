@@ -49,6 +49,7 @@ for _, togg, jolts in L:
     for t in [tog for tog in togg if idx in tog]:
       nx_state = [*state]
       for n in t:
+        # TODO error is that nx_state[n] could already be inf
         nx_state[n] -= mn
       assert nx_state[idx] == 0
       nx_state[idx] = +inf
