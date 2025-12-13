@@ -34,6 +34,36 @@ for onoff, togg, _ in L:
   p1 += mn
 print(p1)
 
+# DFS too slow
+"""
+sm = 0
+for _, togg, jolts in L:
+  togg.sort(key=len)
+  S = [(0, (0,) * len(jolts))]
+  seen = set()
+  mn = +inf
+  while S:
+    cnt, state = S.pop()
+    if state in seen:
+      continue
+    seen.add(state)
+    if cnt >= mn:
+      continue
+    if jolts == state:
+      mn = cnt
+      continue
+    for tog in togg:
+      nx_state = [*state]
+      for btn in tog:
+        nx_state[btn] += 1
+        if nx_state[btn] > jolts[btn]:
+          break
+      else:
+        S.append((cnt+1, tuple(nx_state)))
+  sm += mn
+print(sm)
+"""
+
 p2 = 0
 for _, togg, jolts in L:
   mn_cnt = +inf
